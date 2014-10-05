@@ -1,5 +1,6 @@
 <?php
 
+return ;
 /**
  * @file
  * AJAX comments module file.
@@ -43,7 +44,7 @@ function ajax_comments_menu() {
     'delivery callback' => 'ajax_deliver',
     'type' => MENU_CALLBACK,
   );
-
+/*
   $items['admin/config/content/ajax_comments'] = array(
     'title' => 'AJAX comments',
     'description' => 'AJAXifies comments on site.',
@@ -52,6 +53,7 @@ function ajax_comments_menu() {
     'access arguments' => array('administer site configuration'),
     'file' => 'ajax_comments.admin.inc',
   );
+  */
 
   return $items;
 }
