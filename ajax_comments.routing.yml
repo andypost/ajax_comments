@@ -1,0 +1,7 @@
+ajax_comments.settings:
+  path: '/admin/config/content/ajax_comments'
+  defaults:
+    _form: '\Drupal\ajax_comments\Form\AjaxCommentsSettingsForm'
+    _title: 'Ajax comments'
+  #requirements:
+    #_permission: 'administer ajax_comments'
