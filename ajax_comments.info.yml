@@ -4,4 +4,4 @@ description: Module makes comments load without a page refresh via AJAX
 core: 8.x
 dependencies:
   - comment
-configure: admin/config/content/ajax_comments
+configure: ajax_comments.settings

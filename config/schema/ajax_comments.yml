@@ -1,0 +1,15 @@
+# Schema for the configuration files of the AJAX Comments module.
+
+ajax_comments.settings:
+  type: mapping
+  label: 'AJAX comments settings'
+  mapping:
+    notify:
+      type: boolean
+      label: 'Add notification message when comment posted'
+    enable_scroll:
+      type: boolean
+      label: 'Enable scrolling events'
+    reply_autoclose:
+      type: boolean
+      label: 'Autoclose any opened reply forms'

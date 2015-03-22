@@ -9,15 +9,6 @@
  * Implements hook_menu().
  */
 function ajax_comments_menu() {
-  $items['admin/config/content/ajax_comments'] = array(
-    'title' => 'AJAX comments',
-    'description' => 'AJAXifies comments on site.',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('ajax_comments_settings'),
-    'access arguments' => array('administer site configuration'),
-    'file' => 'ajax_comments.admin.inc',
-  );
-
   $items['ajax_comment/%comment/edit'] = array(
     'page callback' => 'ajax_comments_edit',
     'page arguments' => array(1),
