@@ -3,5 +3,5 @@ ajax_comments.settings:
   defaults:
     _form: '\Drupal\ajax_comments\Form\AjaxCommentsSettingsForm'
     _title: 'Ajax comments'
-  #requirements:
-    #_permission: 'administer ajax_comments'
+  requirements:
+    _permission: 'administer comments'

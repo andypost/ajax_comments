@@ -5,7 +5,7 @@
  * Contains \Drupal\ajax_comments\Form\AjaxCommentsSettingsForm.
  */
 
-namespace Drupal\AjaxComments\Form;
+namespace Drupal\ajax_comments\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Cache\Cache;
@@ -21,6 +21,13 @@ class AjaxCommentsSettingsForm extends ConfigFormBase {
    */
   public function getFormID() {
     return 'ajax_comments_settings';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getEditableConfigNames() {
+    return ['ajax_comments.settings'];
   }
 
   /**
@@ -50,19 +57,11 @@ class AjaxCommentsSettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('ajax_comments_disable_scroll'),
     );
 
-    $em = \Drupal::entityManager();
-    // Only use node types the user has access to.
-    $view_modes = array();
-    foreach ($em->getStorage('node_type')->loadMultiple() as $type) {
-      $view_modes[] = $view_modes;
-    }
-
-    $form['ajax_comments_view_modes'] = array(
-      '#title' => t('View modes'),
-      '#type' => 'checkboxes',
-      '#description' => t('Select which view modes you want to activate ajax comments on. If you select nothing, AJAX Comments will be enabled everywhere.'),
-      '#default_value' => variable_get('ajax_comments_view_modes', array()),
-      '#options' => $view_modes,
+    $form['ajax_comments_reply_autoclose'] = array(
+      '#title' => t('Autoclose reply'),
+      '#type' => 'checkbox',
+      '#description' => t('Autoclose any opened reply forms'),
+      '#default_value' => $config->get('ajax_comments_reply_autoclose', ''),
     );
 
     return parent::buildForm($form, $form_state);
@@ -71,11 +70,11 @@ class AjaxCommentsSettingsForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, array &$form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     $config = $this->config('ajax_comments.settings');
     //$config->set('comments_form_type', $form_state->getValue('ajax_comments']);
     $config->save();
-    parent::submitForm($form, $form_state);
+    return parent::submitForm($form, $form_state);
 
     // @todo Decouple from form: http://drupal.org/node/2040135.
     // Cache::invalidateTags(array('config' => 'ajax_comments.settings'));
