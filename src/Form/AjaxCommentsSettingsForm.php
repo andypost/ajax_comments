@@ -36,11 +36,11 @@ class AjaxCommentsSettingsForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('ajax_comments.settings');
 
-    $form['ajax_comments_node_types'] = array(
+    $form['ajax_comments_bundle_types'] = array(
       '#title' => t('Content types'),
       '#type' => 'checkboxes',
-      '#description' => t('Select node types you want to activate ajax comments on. If you select nothing, AJAX Comments will be enabled everywhere.'),
-      '#default_value' => $config->get('ajax_comments_node_types'),
+      '#description' => t('Select conten types you want to activate ajax comments on. If you select nothing, AJAX Comments will be enabled everywhere.'),
+      '#default_value' => $config->get('ajax_comments_bundle_types'),
       '#options' => node_type_get_names(),
     );
     $form['ajax_comments_notify'] = array(
