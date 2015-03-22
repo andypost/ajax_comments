@@ -6,45 +6,6 @@
  */
 
 /**
- * Implements hook_menu().
- */
-function ajax_comments_menu() {
-  $items['ajax_comment/%comment/edit'] = array(
-    'page callback' => 'ajax_comments_edit',
-    'page arguments' => array(1),
-    'access callback' => 'comment_access',
-    'access arguments' => array('edit', 1),
-    'delivery callback' => 'ajax_deliver',
-    'type' => MENU_CALLBACK,
-  );
-
-  $items['ajax_comment/%/delete'] = array(
-    'page callback' => 'ajax_comments_delete',
-    'page arguments' => array(1),
-    'access arguments' => array('administer comments'),
-    'delivery callback' => 'ajax_deliver',
-    'type' => MENU_CALLBACK,
-  );
-
-  // Special-casing for CommentAccess Module
-  if (module_exists('commentaccess')) {
-    $items['ajax_comment/%/delete']['access callback'] = 'commentaccess_access_check';
-    $items['ajax_comment/%/delete']['access arguments'] = array(1, 'delete');
-  }
-
-  $items['ajax_comment/reply/%node'] = array(
-    'page callback' => 'ajax_comments_reply',
-    'page arguments' => array(2),
-    'access callback' => 'node_access',
-    'access arguments' => array('view', 2),
-    'delivery callback' => 'ajax_deliver',
-    'type' => MENU_CALLBACK,
-  );
-
-  return $items;
-}
-
-/**
  * Implements hook_views_api().
  */
 function ajax_comments_views_api() {
@@ -530,6 +491,9 @@ function ajax_comments_preprocess_comment_wrapper(&$variables) {
  * Note: $pid is an optional parameter. This functionality is utilized by the
  * "Add new comment" link on pages where there is no default comment form
  * (comment_form_location is COMMENT_FORM_SEPARATE_PAGE)
+ *
+ * @todo Move to reply method of controller.
+ * @see \Drupal\ajax_comments\Controller\AjaxCommentsController::reply()
  */
 function ajax_comments_reply($node, $pid = 0, $flag = 0) {
   if (!user_access('post comments')) {
@@ -642,72 +606,6 @@ function _ajax_comments_cache_key($nid, $pid) {
   }
 
   return $key;
-}
-
-/**
- * Callback for clicking "edit".
- */
-function ajax_comments_edit($comment) {
-  $node = node_load($comment->nid);
-
-  // Build form.
-  $form_build = drupal_get_form("comment_node_{$node->type}_form", $comment);
-  $form = drupal_render($form_build);
-
-  // Remove anchor
-  $commands[] = ajax_command_remove('a#comment-' . $comment->cid);
-
-  // Replace comment with form.
-  $commands[] = ajax_command_replace('.comment-wrapper-' . $comment->cid, $form);
-
-  if (!variable_get('ajax_comments_disable_scroll', 0)) {
-    $commands[] = array('command' => 'ajaxCommentsScrollToElement', 'selector' => '.ajax-comments-reply-form-' . $comment->nid . '-' . $comment->pid . '-' . $comment->cid);
-  }
-
-  return array('#type' => 'ajax', '#commands' => $commands);
-}
-
-/**
- * Callback for clicking "delete".
- */
-function ajax_comments_delete($cid) {
-  if (!($comment = comment_load($cid))) {
-    return MENU_NOT_FOUND;
-  }
-
-  // Need to include comment module admin file for delete form.
-  $form_state = array();
-  $form_state['build_info']['args'] = array($comment);
-
-  // Load this using form_load_include so it's cached properly and works in the
-  // ajax callback.
-  form_load_include($form_state, 'inc', 'comment', 'comment.admin');
-
-  // Get child comments (replies on this comment)
-  $form_state['storage']['cids'] = array();
-  $query = db_select('comment', 'c');
-  $query->addField('c', 'cid');
-  $query->condition('c.nid', $comment->nid)->condition('c.thread', substr($comment->thread, 0, -1) . '.%', 'LIKE')->addTag('node_access');
-  if (!user_access('administer comments')) {
-    $query->condition('c.status', COMMENT_PUBLISHED);
-  }
-  $query->orderBy('c.cid', 'ASC');
-  $cids = $query->execute()->fetchCol();
-  // Save child comments ids if they are exist
-  if (!empty($cids)) {
-    $form_state['storage']['cids'] = $cids;
-  }
-
-  $form_build = drupal_build_form('comment_confirm_delete', $form_state);
-  $form = drupal_render($form_build);
-
-  // Hide contents.
-  $commands[] = ajax_command_invoke('.comment-wrapper-' . $cid . ' >*', 'hide');
-
-  // Put form inside main comment wrapper.
-  $commands[] = ajax_command_prepend('.comment-wrapper-' . $cid, $form);
-
-  return array('#type' => 'ajax', '#commands' => $commands);
 }
 
 /**

@@ -5,3 +5,24 @@ ajax_comments.settings:
     _title: 'Ajax comments'
   requirements:
     _permission: 'administer site configuration'
+
+ajax_comments.edit:
+  path: '/ajax_comments/{comment}/edit'
+  defaults:
+    _controller: '\Drupal\ajax_comments\Controller\AjaxCommentsController::edit'
+  requirements:
+    _entity_access: 'comment.update'
+
+ajax_comments.delete:
+  path: '/ajax_comments/{comment}/delete'
+  defaults:
+    _controller: '\Drupal\ajax_comments\Controller\AjaxCommentsController::delete'
+  requirements:
+    _entity_access: 'comment.update'
+
+ajax_comments.reply:
+  path: '/ajax_comments/{comment}/reply'
+  defaults:
+    _controller: '\Drupal\ajax_comments\Controller\AjaxCommentsController::reply'
+  requirements:
+    _access: 'TRUE'
